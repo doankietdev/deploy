@@ -42,8 +42,6 @@ services:
     env_file: .env.digital-world-shop-web
     ports:
       - '3000:3000'
-    networks:
-      - digital-shop-network
     depends_on:
       - backend
 
