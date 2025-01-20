@@ -1,0 +1,55 @@
+services:
+  mongodb:
+    image: mongo:8.0.0
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - shared
+
+  redis:
+    image: redis:7.4.1
+    container_name: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - shared
+    command: ['redis-server', '--requirepass', '${REDIS_PASSWORD}']
+
+  digital-world-shop-api:
+    image: doankietdev/digital-world-shop-api:1.0.0
+    container_name: digital-world-shop-api
+    env_file: .env.digital-world-shop-api
+    ports:
+      - '5600:5600'
+    networks:
+      - shared
+      - digital-world-shop
+    depends_on:
+      - mongodb
+      - redis
+
+  digital-world-shop-web:
+    image: doankietdev/digital-world-shop-web:1.0.0
+    container_name: digital-world-shop-web
+    env_file: .env.digital-world-shop-web
+    ports:
+      - '3000:3000'
+    networks:
+      - digital-shop-network
+    depends_on:
+      - backend
+
+volumes:
+  mongodb-data:
+
+networks:
+  shared:
+  digital-world-shop:
